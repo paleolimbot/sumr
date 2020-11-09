@@ -17,3 +17,5 @@ Imports:
     dplyr (>= 1.0.0)
 URL: https://github.com/paleolimbot/sumr
 BugReports: https://github.com/paleolimbot/sumr/issues
+Suggests: 
+    testthat
