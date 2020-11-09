@@ -9,15 +9,52 @@
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 <!-- badges: end -->
 
-The goal of sumr is to provide a workaround for the currently very noisy
-`dplyr::summarise()`:
+The goal of sumr is to provide a workaround for the noisy and permissive
+`dplyr::summarise()`. It’s seriously awesome and powerful\! But you can
+get burned if you did not expect this behaviour.
 
 ``` r
 library(dplyr)
-summarised <- starwars %>%
+starwars %>%
   group_by(species) %>%
-  summarise(mass = mean(mass))
+  summarise(mass = mean(mass)) %>% 
+  count(species)
 #> `summarise()` ungrouping output (override with `.groups` argument)
+#> # A tibble: 38 x 2
+#>    species       n
+#>    <chr>     <int>
+#>  1 Aleena        1
+#>  2 Besalisk      1
+#>  3 Cerean        1
+#>  4 Chagrian      1
+#>  5 Clawdite      1
+#>  6 Droid         1
+#>  7 Dug           1
+#>  8 Ewok          1
+#>  9 Geonosian     1
+#> 10 Gungan        1
+#> # ... with 28 more rows
+
+starwars %>%
+  group_by(species) %>% 
+  summarise(films = unique(unlist(films))) %>% 
+  count(species)
+#> `summarise()` regrouping output by 'species' (override with `.groups` argument)
+#> # A tibble: 38 x 2
+#> # Groups:   species [38]
+#>    species       n
+#>    <chr>     <int>
+#>  1 Aleena        1
+#>  2 Besalisk      1
+#>  3 Cerean        3
+#>  4 Chagrian      2
+#>  5 Clawdite      1
+#>  6 Droid         7
+#>  7 Dug           1
+#>  8 Ewok          1
+#>  9 Geonosian     2
+#> 10 Gungan        2
+#> # ... with 28 more rows
 ```
 
 You can silence this message using `options(dplyr.summarise.inform =
@@ -78,6 +115,31 @@ starwars %>%
 #>  9 Geonosian    80
 #> 10 Gungan       NA
 #> # ... with 28 more rows
+```
+
+`sumr()` checks for length-one results, but you can use `retbl()` to use
+the awesome new features of `summarise()`. Because `retbl()` typically
+computes a new data frame for each group, groups are kept:
+
+``` r
+starwars %>%
+  group_by(species) %>% 
+  retbl(films = unique(unlist(films)))
+#> # A tibble: 84 x 2
+#> # Groups:   species [38]
+#>    species  films                  
+#>    <chr>    <chr>                  
+#>  1 Aleena   The Phantom Menace     
+#>  2 Besalisk Attack of the Clones   
+#>  3 Cerean   Attack of the Clones   
+#>  4 Cerean   The Phantom Menace     
+#>  5 Cerean   Revenge of the Sith    
+#>  6 Chagrian Attack of the Clones   
+#>  7 Chagrian The Phantom Menace     
+#>  8 Clawdite Attack of the Clones   
+#>  9 Droid    The Empire Strikes Back
+#> 10 Droid    Attack of the Clones   
+#> # ... with 74 more rows
 ```
 
 ## Installation

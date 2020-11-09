@@ -20,13 +20,19 @@ knitr::opts_chunk$set(
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 <!-- badges: end -->
 
-The goal of sumr is to provide a workaround for the currently very noisy `dplyr::summarise()`:
+The goal of sumr is to provide a workaround for the noisy and permissive `dplyr::summarise()`. It's seriously awesome and powerful! But you can get burned if you did not expect this behaviour.
 
 ```{r}
 library(dplyr)
-summarised <- starwars %>%
+starwars %>%
   group_by(species) %>%
-  summarise(mass = mean(mass))
+  summarise(mass = mean(mass)) %>% 
+  count(species)
+
+starwars %>%
+  group_by(species) %>% 
+  summarise(films = unique(unlist(films))) %>% 
+  count(species)
 ```
 
 You can silence this message using `options(dplyr.summarise.inform = FALSE)`. If you'd rather not write this at the top of every script, you can use this package to make the grouping of your result explicit with roughly the same number of characters:
@@ -49,6 +55,14 @@ starwars %>%
 starwars %>%
   group_by(species) %>%
   sumr_keep(mass = mean(mass))
+```
+
+`sumr()` checks for length-one results, but you can use `retbl()` to use the awesome new features of `summarise()`. Because `retbl()` typically computes a new data frame for each group, groups are kept:
+
+```{r}
+starwars %>%
+  group_by(species) %>% 
+  retbl(films = unique(unlist(films)))
 ```
 
 ## Installation
