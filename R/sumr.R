@@ -29,23 +29,36 @@
 #'   sumr_keep(mass = mean(mass))
 #'
 sumr <- function(.data, ...) {
-  dplyr::summarise(.data, ..., .groups = "drop")
+  sum <- dplyr::summarise(.data, ..., .groups = "keep")
+  assert_groups_are_rows(sum)
+  dplyr::ungroup(sum)
 }
 
 #' @rdname sumr
 #' @export
 sumr_keep <- function(.data, ...) {
-  dplyr::summarise(.data, ..., .groups = "keep")
+  sum <- dplyr::summarise(.data, ..., .groups = "keep")
+  assert_groups_are_rows(sum)
+  dplyr::group_by(sum, !!! dplyr::groups(.data))
 }
 
 #' @rdname sumr
 #' @export
 sumr_peel <- function(.data, ...) {
-  dplyr::summarise(.data, ..., .groups = "drop_last")
+  sum <- dplyr::summarise(.data, ..., .groups = "keep")
+  assert_groups_are_rows(sum)
+  groups <- dplyr::groups(.data)
+  dplyr::group_by(sum, !!! utils::head(groups, length(groups) - 1))
 }
 
 #' @rdname sumr
 #' @export
 sumr_rowwise <- function(.data, ...) {
-  dplyr::summarise(.data, ..., .groups = "rowwise")
+  sum <- dplyr::summarise(.data, ..., .groups = "keep")
+  assert_groups_are_rows(sum)
+  dplyr::rowwise(sum)
+}
+
+assert_groups_are_rows <- function(x) {
+  stopifnot(all(dplyr::group_size(x) == 1L))
 }

@@ -18,4 +18,5 @@ Imports:
 URL: https://github.com/paleolimbot/sumr
 BugReports: https://github.com/paleolimbot/sumr/issues
 Suggests: 
-    testthat
+    testthat,
+    tibble
