@@ -2,7 +2,7 @@
 #' Summarise with explicit group structure
 #'
 #' Use the superpowered [dplyr::summarise()] with explicit
-#' grouping.
+#' grouping and checks for length-one results per group.
 #'
 #' @inheritParams dplyr::summarise
 #'
